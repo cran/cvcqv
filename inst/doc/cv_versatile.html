@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<meta name="author" content="Maani Beigy" />
+
+<meta name="date" content="2019-02-18" />
+
+<title>Coefficient of Variation: cv_versatile</title>
+
+
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css" data-origin="pandoc">
+a.sourceLine { display: inline-block; line-height: 1.25; }
+a.sourceLine { pointer-events: none; color: inherit; text-decoration: inherit; }
+a.sourceLine:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode { white-space: pre; position: relative; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+code.sourceCode { white-space: pre-wrap; }
+a.sourceLine { text-indent: -1em; padding-left: 1em; }
+}
+pre.numberSource a.sourceLine
+  { position: relative; left: -4em; }
+pre.numberSource a.sourceLine::before
+  { content: attr(data-line-number);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; pointer-events: all; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {  }
+@media screen {
+a.sourceLine::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    for (var j = 0; j < rules.length; j++) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") continue;
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' || rule.style.backgroundColor === '') continue;
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#header {
+text-align: center;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">Coefficient of Variation: cv_versatile</h1>
+<h4 class="author">Maani Beigy</h4>
+<h4 class="date">February 18, 2019</h4>
+
+
+
+<div id="coefficient-of-variation" class="section level1">
+<h1>Coefficient of Variation</h1>
+<p>Coefficient of variation <em>(<span class="math inline">\(CV\)</span>)</em> is a measure of relative dispersion representing the degree of variability relative to the mean <span class="citation">(Albatineh, Kibria, Wilcox, &amp; Zogheib, 2014)</span>. Since cv is unitless, it is useful for comparison of variables with different units <span class="citation">(Albatineh et al., 2014)</span>. It is also a measure of homogeneity. The <em>population</em> coefficient of variation is:<br />
+<span class="math display">\[CV = \frac{\sigma}{\mu},\]</span> where <span class="math inline">\(\sigma\)</span> is the population standard deviation and <span class="math inline">\(\mu\)</span> is the population mean. Almost always, we analyze data from samples but want to generalize it as the population’s parameter <span class="citation">(Albatineh et al., 2014)</span>. Its sample’s estimate is given as:<br />
+<span class="math display">\[cv = \frac{sd}{\bar{X}}\]</span><br />
+where <span class="math inline">\(sd\)</span> is the sample standard deviation, the square root of the unbiased estimator of population variance, and <span class="math inline">\(\bar{X}\)</span> is the sample mean. The corrected <em>cv</em> to account for the sample size is: <span class="math display">\[
+cv_{corr} = cv * \biggl(1 - \frac{1}{4(n-1)} 
++ \frac{1}{n}cv^2 
++ \frac{1}{2 (n-1)^2} \biggr)
+\]</span> There are various methods for the calculation of <strong>confidence intervals (CI)</strong> for <em>cv</em>. All of them are fruitful and have particular use cases. Some of them are model-based hence their usage depends the assumptions regarding the distribution of data. For sake of versatility, we cover almost all of these methods in <code>cvcqv</code> package. Here, we explain them along with some examples:</p>
+<div id="kelley-confidence-interval" class="section level3">
+<h3>Kelley Confidence Interval</h3>
+<p>Let us assume that <em>CV</em> follows a noncentral <em>t</em> distribution, when the parent population of the scores is <em>normally-distributed</em>, with noncentrality (<span class="math inline">\(\lambda\)</span>) parameter:<br />
+<span class="math display">\[
+\lambda = \frac{\sqrt{n}}{cv}
+\]</span> with <em>v</em> degrees of freedom, where <span class="math inline">\(v = n - 1\)</span>. Let <span class="math inline">\(1 - \alpha\)</span> be the CI coverage with <span class="math inline">\(\alpha_L + \alpha_U = \alpha\)</span> in which <span class="math inline">\(\alpha_L\)</span> is the the proportion of times that <em>cv</em> will be less than the lower confidence bound and <span class="math inline">\(\alpha_U\)</span> the proportion of times that <em>cv</em> will be greater than the upper confidence bound in the CI procedure <span class="citation">(Kelley, 2007)</span>. The lower confidence tile for <span class="math inline">\(\lambda\)</span> is is the noncentrality parameter that results in <span class="math inline">\(t_{(1-\alpha_L,v,\lambda_L)}=\hat{\lambda}\)</span> and the upper confidence tile for <span class="math inline">\(\lambda\)</span> is is the noncentrality parameter that results in <span class="math inline">\(t_{(\alpha_U,v,\lambda_U)}=\hat{\lambda}\)</span>, where <span class="math inline">\(t_{(1-\alpha_L,v,\lambda_L)}=\hat{\lambda}\)</span> is the value of noncentral <em>t</em> distribution at the <span class="math inline">\(1-\alpha_L\)</span> <strong>quantile</strong> with noncentrality parameter <span class="math inline">\(\lambda_L\)</span> and <span class="math inline">\(t_{(\alpha_U,v,\lambda_U)}=\hat{\lambda}\)</span> is the value of noncentral <em>t</em> distribution at the <span class="math inline">\(\alpha_U\)</span> <strong>quantile</strong> with noncentrality parameter <span class="math inline">\(\lambda_U\)</span>, respectively <span class="citation">(Kelley, 2007)</span>.<br />
+Afterwards, we transform the tiles of the confidence interval for <span class="math inline">\(\lambda\)</span>, by dividing the tiles by <span class="math inline">\(\sqrt{n}\)</span> and thereafter inverting them; the CI limits of <span class="math inline">\(cv\)</span> will be obtained:<br />
+<span class="math display">\[
+p\left[\biggl(\frac{\lambda_U}{\sqrt{n}}\biggr)^{-1}
+\le CV \le \biggl(\frac{\lambda_L}{\sqrt{n}}\biggr)^{-1}\right] = 1-\alpha
+\]</span> where <span class="math inline">\(p\)</span> stands for <em>probability</em>. Thanks to package <code>MBESS</code> <span class="citation">(Kelley, 2018)</span> for the computation of confidence limits for the noncentrality parameter from a <em>t</em> distribution (<code>conf.limits.nct</code>), <span class="math inline">\(cv\)</span> will be obtained as:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1">x &lt;-<span class="st"> </span><span class="kw">c</span>(</a>
+<a class="sourceLine" id="cb1-2" data-line-number="2">    <span class="fl">0.2</span>, <span class="fl">0.5</span>, <span class="fl">1.1</span>, <span class="fl">1.4</span>, <span class="fl">1.8</span>, <span class="fl">2.3</span>, <span class="fl">2.5</span>, <span class="fl">2.7</span>, <span class="fl">3.5</span>, <span class="fl">4.4</span>,</a>
+<a class="sourceLine" id="cb1-3" data-line-number="3">    <span class="fl">4.6</span>, <span class="fl">5.4</span>, <span class="fl">5.4</span>, <span class="fl">5.7</span>, <span class="fl">5.8</span>, <span class="fl">5.9</span>, <span class="fl">6.0</span>, <span class="fl">6.6</span>, <span class="fl">7.1</span>, <span class="fl">7.9</span></a>
+<a class="sourceLine" id="cb1-4" data-line-number="4">)</a>
+<a class="sourceLine" id="cb1-5" data-line-number="5"><span class="kw">cv_versatile</span>(</a>
+<a class="sourceLine" id="cb1-6" data-line-number="6">    x, </a>
+<a class="sourceLine" id="cb1-7" data-line-number="7">    <span class="dt">na.rm =</span> <span class="ot">TRUE</span>, </a>
+<a class="sourceLine" id="cb1-8" data-line-number="8">    <span class="dt">digits =</span> <span class="dv">3</span>, </a>
+<a class="sourceLine" id="cb1-9" data-line-number="9">    <span class="dt">method =</span> <span class="st">&quot;kelley&quot;</span>, </a>
+<a class="sourceLine" id="cb1-10" data-line-number="10">    <span class="dt">correction =</span> <span class="ot">TRUE</span>, </a>
+<a class="sourceLine" id="cb1-11" data-line-number="11">    <span class="dt">alpha =</span> <span class="fl">0.05</span></a>
+<a class="sourceLine" id="cb1-12" data-line-number="12">)</a></code></pre></div>
+<pre><code>## $method
+## [1] &quot;Corrected cv with Kelley 95% CI&quot;
+## 
+## $statistics
+##      est  lower upper
+##   58.058 41.467 98.51</code></pre>
+</div>
+<div id="mckay-confidence-interval" class="section level3">
+<h3>McKay Confidence Interval</h3>
+<p>McKay <span class="citation">(McKay, 1932)</span> introduced the following CI for <span class="math inline">\(cv\)</span>; considering <span class="math inline">\(u_1 = \chi_{v,1-\alpha/2}^2\)</span> and <span class="math inline">\(u_1 = \chi_{v,\alpha/2}^2\)</span> being the <span class="math inline">\(100(1-\alpha/2)\%\)</span> and <span class="math inline">\(100(\alpha/2)\%\)</span> percentile of the <span class="math inline">\(\chi^2\)</span> distribution with <span class="math inline">\(v = n-1\)</span> degrees of freedom, respectively <span class="citation">(Albatineh et al., 2014)</span>:<br />
+<span class="math display">\[
+\biggl(cv\left[\biggl(\frac{u_1}{v}-1\biggr)(cv)^{2}+\frac{u_1}{v}\right]^{-1/2}
+\le CV \le cv
+\left[\biggl(\frac{u_2}{v}-1\biggr)(cv)^{2}+\frac{u_2}{v}\right]^{-1/2}\biggr)
+\]</span> Let us calculate the 95% CI for our variable <span class="math inline">\(x\)</span> according to McKay’s method <span class="citation">(McKay, 1932)</span>:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" data-line-number="1"><span class="kw">cv_versatile</span>(</a>
+<a class="sourceLine" id="cb3-2" data-line-number="2">    x, </a>
+<a class="sourceLine" id="cb3-3" data-line-number="3">    <span class="dt">na.rm =</span> <span class="ot">TRUE</span>, </a>
+<a class="sourceLine" id="cb3-4" data-line-number="4">    <span class="dt">digits =</span> <span class="dv">3</span>, </a>
+<a class="sourceLine" id="cb3-5" data-line-number="5">    <span class="dt">method =</span> <span class="st">&quot;mckay&quot;</span>, </a>
+<a class="sourceLine" id="cb3-6" data-line-number="6">    <span class="dt">correction =</span> <span class="ot">TRUE</span>, </a>
+<a class="sourceLine" id="cb3-7" data-line-number="7">    <span class="dt">alpha =</span> <span class="fl">0.05</span></a>
+<a class="sourceLine" id="cb3-8" data-line-number="8">)</a></code></pre></div>
+<pre><code>## $method
+## [1] &quot;Corrected cv with McKay 95% CI&quot;
+## 
+## $statistics
+##      est  lower   upper
+##   58.058 41.622 109.367</code></pre>
+</div>
+<div id="miller-confidence-interval" class="section level3">
+<h3>Miller Confidence Interval</h3>
+<p>Miller <span class="citation">(Edward Miller, 1991)</span> introduced the following CI for <span class="math inline">\(cv\)</span>; considering <span class="math inline">\(Z_{\alpha/2}\)</span> being the <span class="math inline">\((1-\alpha/2)\)</span> percentile of the standard normal distribution <span class="citation">(Albatineh et al., 2014)</span>: <span class="math display">\[
+\biggl(cv - Z_{\alpha/2}\sqrt{
+\biggl(\frac{cv^2}{v}\biggr)\biggl(\frac{1}{2}+cv^2\biggr)} \le
+CV \le cv + Z_{\alpha/2}\sqrt{
+\biggl(\frac{cv^2}{v}\biggr)\biggl(\frac{1}{2}+cv^2\biggr)}
+\biggr)
+\]</span> where <span class="math inline">\(v = n-1\)</span> is the degree of freedom.<br />
+Let us calculate the 95% CI for <span class="math inline">\(x\)</span> according to Miller’s method <span class="citation">(Edward Miller, 1991)</span>:</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" data-line-number="1"><span class="kw">cv_versatile</span>(</a>
+<a class="sourceLine" id="cb5-2" data-line-number="2">    x, </a>
+<a class="sourceLine" id="cb5-3" data-line-number="3">    <span class="dt">na.rm =</span> <span class="ot">TRUE</span>, </a>
+<a class="sourceLine" id="cb5-4" data-line-number="4">    <span class="dt">digits =</span> <span class="dv">3</span>, </a>
+<a class="sourceLine" id="cb5-5" data-line-number="5">    <span class="dt">method =</span> <span class="st">&quot;miller&quot;</span>, </a>
+<a class="sourceLine" id="cb5-6" data-line-number="6">    <span class="dt">correction =</span> <span class="ot">TRUE</span>, </a>
+<a class="sourceLine" id="cb5-7" data-line-number="7">    <span class="dt">alpha =</span> <span class="fl">0.05</span></a>
+<a class="sourceLine" id="cb5-8" data-line-number="8">)</a></code></pre></div>
+<pre><code>## $method
+## [1] &quot;Corrected cv with Miller 95% CI&quot;
+## 
+## $statistics
+##      est  lower  upper
+##   58.058 34.173 81.942</code></pre>
+</div>
+<div id="vangel-confidence-interval" class="section level3">
+<h3>Vangel Confidence Interval</h3>
+<p>Vangel <span class="citation">(Vangel, 1996)</span> proposed the following CI for <span class="math inline">\(cv\)</span>; which is a modification on McKay’s CI: <span class="math display">\[
+\biggl(cv\left[\biggl(\frac{u_1+1}{v}-1\biggr)(cv)^{2}+\frac{u_1}{v}\right]^{-1/2}
+\le CV \le cv
+\left[\biggl(\frac{u_2+1}{v}-1\biggr)(cv)^{2}+\frac{u_2}{v}\right]^{-1/2}\biggr)
+\]</span> Let us calculate the 95% CI for <span class="math inline">\(x\)</span> according to Vangel’s method <span class="citation">(Vangel, 1996)</span>:</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb7-1" data-line-number="1"><span class="kw">cv_versatile</span>(</a>
+<a class="sourceLine" id="cb7-2" data-line-number="2">    x, </a>
+<a class="sourceLine" id="cb7-3" data-line-number="3">    <span class="dt">na.rm =</span> <span class="ot">TRUE</span>, </a>
+<a class="sourceLine" id="cb7-4" data-line-number="4">    <span class="dt">digits =</span> <span class="dv">3</span>, </a>
+<a class="sourceLine" id="cb7-5" data-line-number="5">    <span class="dt">method =</span> <span class="st">&quot;vangel&quot;</span>, </a>
+<a class="sourceLine" id="cb7-6" data-line-number="6">    <span class="dt">correction =</span> <span class="ot">TRUE</span>, </a>
+<a class="sourceLine" id="cb7-7" data-line-number="7">    <span class="dt">alpha =</span> <span class="fl">0.05</span></a>
+<a class="sourceLine" id="cb7-8" data-line-number="8">)</a></code></pre></div>
+<pre><code>## $method
+## [1] &quot;Corrected cv with Vangel 95% CI&quot;
+## 
+## $statistics
+##      est  lower   upper
+##   58.058 41.443 106.237</code></pre>
+</div>
+<div id="mahmoudvand-hassani-confidence-interval" class="section level3">
+<h3>Mahmoudvand-Hassani Confidence Interval</h3>
+<p>Mahmoudvand and Hassani <span class="citation">(Mahmoudvand &amp; Hassani, 2009)</span> proposed the following CI for <span class="math inline">\(cv\)</span>; which is obtained using ranked set sampling <em>(RSS)</em>:<br />
+<span class="math display">\[
+\biggl(\frac{cv}{2-C_n+Z_{1-\alpha/2}\sqrt{1-C_n^2}}
+\le CV \le
+\frac{cv}{2-C_n-Z_{1-\alpha/2}\sqrt{1-C_n^2}}
+\biggr)
+\]</span> where <span class="math display">\[
+C_n=\sqrt{\frac{2}{n-1}}\frac{\Gamma{(n/2)}}{\Gamma{((n-1)/2)}},
+\Gamma(n)=(n-1)!
+\]</span> Let us now calculate the 95% CI for <span class="math inline">\(x\)</span> according to Mahmoudvand-Hassani’s method <span class="citation">(Mahmoudvand &amp; Hassani, 2009)</span>:</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb9-1" data-line-number="1"><span class="kw">cv_versatile</span>(</a>
+<a class="sourceLine" id="cb9-2" data-line-number="2">    x, </a>
+<a class="sourceLine" id="cb9-3" data-line-number="3">    <span class="dt">na.rm =</span> <span class="ot">TRUE</span>, </a>
+<a class="sourceLine" id="cb9-4" data-line-number="4">    <span class="dt">digits =</span> <span class="dv">3</span>, </a>
+<a class="sourceLine" id="cb9-5" data-line-number="5">    <span class="dt">method =</span> <span class="st">&quot;mahmoudvand_hassani&quot;</span>, </a>
+<a class="sourceLine" id="cb9-6" data-line-number="6">    <span class="dt">correction =</span> <span class="ot">TRUE</span>, </a>
+<a class="sourceLine" id="cb9-7" data-line-number="7">    <span class="dt">alpha =</span> <span class="fl">0.05</span></a>
+<a class="sourceLine" id="cb9-8" data-line-number="8">)</a></code></pre></div>
+<pre><code>## $method
+## [1] &quot;Corrected cv with Mahmoudvand-Hassani 95% CI&quot;
+## 
+## $statistics
+##      est lower  upper
+##   58.058 43.69 83.264</code></pre>
+</div>
+<div id="normal-approximation-confidence-interval" class="section level3">
+<h3>Normal Approximation Confidence Interval</h3>
+<p>Wararit Panichkitkosolkul <span class="citation">(Panichkitkosolkul, 2013)</span> proposed the following CI for <span class="math inline">\(cv\)</span>; which is a <em>normal approximation</em>: <span class="math display">\[
+\biggl(\frac{cv}{C_{n+1}+Z_{1-\alpha/2}\sqrt{1-C_{n+1}^2}}
+\le CV \le
+\frac{cv}{C_{n+1}-Z_{1-\alpha/2}\sqrt{1-C_{n+1}^2}}
+\biggr)
+\]</span> where <span class="math inline">\(C_{n+1}=\sqrt{1-(1/2n)}\)</span><br />
+Now we calculate the normal approximation 95% CI for <span class="math inline">\(x\)</span> according to Panichkitkosolkul <span class="citation">(Panichkitkosolkul, 2013)</span>:</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb11-1" data-line-number="1"><span class="kw">cv_versatile</span>(</a>
+<a class="sourceLine" id="cb11-2" data-line-number="2">    x, </a>
+<a class="sourceLine" id="cb11-3" data-line-number="3">    <span class="dt">na.rm =</span> <span class="ot">TRUE</span>, </a>
+<a class="sourceLine" id="cb11-4" data-line-number="4">    <span class="dt">digits =</span> <span class="dv">3</span>, </a>
+<a class="sourceLine" id="cb11-5" data-line-number="5">    <span class="dt">method =</span> <span class="st">&quot;normal_approximation&quot;</span>, </a>
+<a class="sourceLine" id="cb11-6" data-line-number="6">    <span class="dt">correction =</span> <span class="ot">TRUE</span>, </a>
+<a class="sourceLine" id="cb11-7" data-line-number="7">    <span class="dt">alpha =</span> <span class="fl">0.05</span></a>
+<a class="sourceLine" id="cb11-8" data-line-number="8">)</a></code></pre></div>
+<pre><code>## $method
+## [1] &quot;Corrected cv with Normal Approximation 95% CI&quot;
+## 
+## $statistics
+##      est  lower  upper
+##   58.058 44.752 85.691</code></pre>
+</div>
+<div id="shortest-length-confidence-interval" class="section level3">
+<h3>Shortest-Length Confidence Interval</h3>
+<p>Panichkitkosolkul <span class="citation">(Panichkitkosolkul, 2013)</span> has also introduced the following CI for <span class="math inline">\(cv\)</span>:<br />
+<span class="math display">\[
+\biggl(\frac{cv\sqrt{v}}{\sqrt{b}}
+\le CV \le
+\frac{cv\sqrt{v}}{\sqrt{a}}
+\biggr)
+\]</span> with <span class="math inline">\(v = n-1\)</span> degrees of freedom. Then, shortest-length 95% CI for <span class="math inline">\(x\)</span> is:</p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb13-1" data-line-number="1"><span class="kw">cv_versatile</span>(</a>
+<a class="sourceLine" id="cb13-2" data-line-number="2">    x, </a>
+<a class="sourceLine" id="cb13-3" data-line-number="3">    <span class="dt">na.rm =</span> <span class="ot">TRUE</span>, </a>
+<a class="sourceLine" id="cb13-4" data-line-number="4">    <span class="dt">digits =</span> <span class="dv">3</span>, </a>
+<a class="sourceLine" id="cb13-5" data-line-number="5">    <span class="dt">method =</span> <span class="st">&quot;shortest_length&quot;</span>, </a>
+<a class="sourceLine" id="cb13-6" data-line-number="6">    <span class="dt">correction =</span> <span class="ot">TRUE</span>, </a>
+<a class="sourceLine" id="cb13-7" data-line-number="7">    <span class="dt">alpha =</span> <span class="fl">0.05</span></a>
+<a class="sourceLine" id="cb13-8" data-line-number="8">)</a></code></pre></div>
+<pre><code>## $method
+## [1] &quot;Corrected cv with Shortest-Length 95% CI&quot;
+## 
+## $statistics
+##      est  lower  upper
+##   58.058 42.221 81.411</code></pre>
+</div>
+<div id="equal-tailed-confidence-interval" class="section level3">
+<h3>Equal-Tailed Confidence Interval</h3>
+<p>The <span class="math inline">\(100(1-\alpha)\%\)</span> equal-tailed CI for <span class="math inline">\(cv\)</span> can be obtained as: <span class="math display">\[
+\biggl(\frac{cv\sqrt{v}}{\sqrt{\chi_{v,1-\alpha/2}^2}}
+\le CV \le
+\frac{cv\sqrt{v}}{\sqrt{\chi_{v,\alpha/2}^2}}
+\biggr)
+\]</span> where <span class="math inline">\(\chi_{v,\alpha/2}^2\)</span> and <span class="math inline">\(\chi_{v,1-\alpha/2}^2\)</span> are the <span class="math inline">\(100(\alpha/2)\)</span> and <span class="math inline">\(100(1-\alpha/2)\)</span> percentiles of the central <span class="math inline">\(\chi^2\)</span> distribution with <span class="math inline">\(v\)</span> degrees of freedom, respectively <span class="citation">(Panichkitkosolkul, 2013)</span>.<br />
+Then, equal-tailed 95% CI for <span class="math inline">\(x\)</span> is:</p>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb15-1" data-line-number="1"><span class="kw">cv_versatile</span>(</a>
+<a class="sourceLine" id="cb15-2" data-line-number="2">    x, </a>
+<a class="sourceLine" id="cb15-3" data-line-number="3">    <span class="dt">na.rm =</span> <span class="ot">TRUE</span>, </a>
+<a class="sourceLine" id="cb15-4" data-line-number="4">    <span class="dt">digits =</span> <span class="dv">3</span>, </a>
+<a class="sourceLine" id="cb15-5" data-line-number="5">    <span class="dt">method =</span> <span class="st">&quot;equal_tailed&quot;</span>, </a>
+<a class="sourceLine" id="cb15-6" data-line-number="6">    <span class="dt">correction =</span> <span class="ot">TRUE</span>, </a>
+<a class="sourceLine" id="cb15-7" data-line-number="7">    <span class="dt">alpha =</span> <span class="fl">0.05</span></a>
+<a class="sourceLine" id="cb15-8" data-line-number="8">)</a></code></pre></div>
+<pre><code>## $method
+## [1] &quot;Corrected cv with Equal-Tailed 95% CI&quot;
+## 
+## $statistics
+##      est  lower  upper
+##   58.058 44.152 84.797</code></pre>
+</div>
+<div id="bootstrap-confidence-intervals" class="section level3">
+<h3>Bootstrap Confidence Intervals</h3>
+<p>Thanks to package <code>boot</code> <span class="citation">(Canty &amp; Ripley, 2017)</span> we can obtain bootstrap CI around <span class="math inline">\(cv\)</span>:</p>
+<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb17-1" data-line-number="1"><span class="kw">cv_versatile</span>(</a>
+<a class="sourceLine" id="cb17-2" data-line-number="2">    x, </a>
+<a class="sourceLine" id="cb17-3" data-line-number="3">    <span class="dt">na.rm =</span> <span class="ot">TRUE</span>, </a>
+<a class="sourceLine" id="cb17-4" data-line-number="4">    <span class="dt">digits =</span> <span class="dv">3</span>, </a>
+<a class="sourceLine" id="cb17-5" data-line-number="5">    <span class="dt">method =</span> <span class="st">&quot;basic&quot;</span>, </a>
+<a class="sourceLine" id="cb17-6" data-line-number="6">    <span class="dt">correction =</span> <span class="ot">TRUE</span>, </a>
+<a class="sourceLine" id="cb17-7" data-line-number="7">    <span class="dt">alpha =</span> <span class="fl">0.05</span></a>
+<a class="sourceLine" id="cb17-8" data-line-number="8">)</a></code></pre></div>
+<pre><code>## $method
+## [1] &quot;Corrected cv with Basic Bootstrap 95% CI&quot;
+## 
+## $statistics
+##      est  lower  upper
+##   58.058 37.866 78.014</code></pre>
+</div>
+<div id="all-available-methods" class="section level3">
+<h3>All Available Methods</h3>
+<p>In conclusion, we can observe CIs calculated by all available methods:</p>
+<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb19-1" data-line-number="1"><span class="kw">cv_versatile</span>(</a>
+<a class="sourceLine" id="cb19-2" data-line-number="2">    x, </a>
+<a class="sourceLine" id="cb19-3" data-line-number="3">    <span class="dt">na.rm =</span> <span class="ot">TRUE</span>, </a>
+<a class="sourceLine" id="cb19-4" data-line-number="4">    <span class="dt">digits =</span> <span class="dv">3</span>, </a>
+<a class="sourceLine" id="cb19-5" data-line-number="5">    <span class="dt">method =</span> <span class="st">&quot;all&quot;</span>, </a>
+<a class="sourceLine" id="cb19-6" data-line-number="6">    <span class="dt">correction =</span> <span class="ot">FALSE</span>, </a>
+<a class="sourceLine" id="cb19-7" data-line-number="7">    <span class="dt">alpha =</span> <span class="fl">0.05</span></a>
+<a class="sourceLine" id="cb19-8" data-line-number="8">)</a></code></pre></div>
+<pre><code>## $method
+## [1] &quot;All methods&quot;
+## 
+## $statistics
+##                         est  lower   upper
+## kelley               57.774 41.467  98.510
+## mckay                57.774 41.441 108.482
+## miller               57.774 34.053  81.494
+## vangel               57.774 41.264 105.424
+## mahmoudvand_hassani  57.774 43.476  82.857
+## equal_tailed         57.774 43.936  84.382
+## shortest_length      57.774 42.014  81.012
+## normal_approximation 57.774 44.533  85.272
+## norm                 57.774 39.136  78.276
+## basic                57.774 38.897  77.648
+##                                                        description
+## kelley                                       cv with Kelley 95% CI
+## mckay                                         cv with McKay 95% CI
+## miller                                       cv with Miller 95% CI
+## vangel                                       cv with Vangel 95% CI
+## mahmoudvand_hassani             cv with Mahmoudvand-Hassani 95% CI
+## equal_tailed                           cv with Equal-Tailed 95% CI
+## shortest_length                     cv with Shortest-Length 95% CI
+## normal_approximation           cv with Normal Approximation 95% CI
+## norm                 cv with Normal Approximation Bootstrap 95% CI
+## basic                               cv with Basic Bootstrap 95% CI</code></pre>
+</div>
+</div>
+<div id="references" class="section level1 unnumbered">
+<h1>References</h1>
+<div id="refs" class="references">
+<div id="ref-Albatineh2014">
+<p>Albatineh, A. N., Kibria, B. M., Wilcox, M. L., &amp; Zogheib, B. (2014). Confidence interval estimation for the population coefficient of variation using ranked set sampling: A simulation study. <em>Journal of Applied Statistics</em>, <em>41</em>(4), 733–751. <a href="https://doi.org/10.1080/02664763.2013.847405">https://doi.org/10.1080/02664763.2013.847405</a></p>
+</div>
+<div id="ref-Canty2017">
+<p>Canty, A., &amp; Ripley, B. (2017). boot: Bootstrap R (S-Plus) Functions. R package version 1.3-20.</p>
+</div>
+<div id="ref-EdwardMiller1991">
+<p>Edward Miller, G. (1991). Asymptotic test statistics for coefficients of variation. <em>Communications in Statistics-Theory and Methods</em>, <em>20</em>(10), 3351–3363.</p>
+</div>
+<div id="ref-Kelley2007">
+<p>Kelley, K. (2007). Sample size planning for the coefficient of variation from the accuracy in parameter estimation approach. <em>Behavior Research Methods</em>, <em>39</em>(4), 755–766. <a href="https://doi.org/10.3758/BF03192966">https://doi.org/10.3758/BF03192966</a></p>
+</div>
+<div id="ref-Kelley2018">
+<p>Kelley, K. (2018). MBESS: The MBESS R Package. R package version 4.4. 3. Retrieved from <a href="https://cran.r-project.org/package=MBESS">https://cran.r-project.org/package=MBESS</a></p>
+</div>
+<div id="ref-Mahmoudvand2009">
+<p>Mahmoudvand, R., &amp; Hassani, H. (2009). Two new confidence intervals for the coefficient of variation in a normal distribution. <em>Journal of Applied Statistics</em>, <em>36</em>(4), 429–442.</p>
+</div>
+<div id="ref-McKay1932">
+<p>McKay, A. T. (1932). Distribution of the Coefficient of Variation and the Extended&quot; t&quot; Distribution. <em>Journal of the Royal Statistical Society</em>, <em>95</em>(4), 695–698.</p>
+</div>
+<div id="ref-Panichkitkosolkul2013">
+<p>Panichkitkosolkul, W. (2013). Confidence Intervals for the Coefficient of Variation in a Normal Distribution with a Known Population Mean. <em>Journal of Probability and Statistics</em>, <em>2013</em>, 1–11. <a href="https://doi.org/10.1155/2013/324940">https://doi.org/10.1155/2013/324940</a></p>
+</div>
+<div id="ref-Vangel1996">
+<p>Vangel, M. G. (1996). Confidence intervals for a normal coefficient of variation. <em>The American Statistician</em>, <em>50</em>(1), 21–26.</p>
+</div>
+</div>
+</div>
+
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
